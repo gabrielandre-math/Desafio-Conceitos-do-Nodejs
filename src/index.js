@@ -84,11 +84,62 @@ app.put('/todos/:id', checksExistsUserAccount, (request, response) => {
 });
 
 app.patch('/todos/:id/done', checksExistsUserAccount, (request, response) => {
+  const { id } = request.params;
+  const { user } = request;
 
+  const todo = user.todos.find((todo) => todo.id === id);
+
+  if (!todo) {
+    return response.status(404).json({error: "Todo not found"});
+  }
+
+  todo.done = true;
+
+  return response.json(todo);
 });
 
 app.delete('/todos/:id', checksExistsUserAccount, (request, response) => {
-  // Complete aqui
+  const { id } = request.params;
+  const { user } = request;
+  const todoIndex = user.todos.findIndex(todo => todo.id === id)
+
+  if (todoIndex === -1) {
+    return response.status(404).json({error: "Todo not found"})
+  }
+
+  user.todos.splice(todoIndex, 1);
+
+  return response.status(204).send();
 });
 
 module.exports = app;
+
+
+// ? 
+/* 
+### DELETE `/todos/:id`
+
+A rota deve receber, pelo header da requisição, 
+uma propriedade `username` contendo o username do usuário 
+e excluir o *todo* que possuir um `id` igual ao `id` presente nos parâmetros da rota.
+
+*/
+
+/*  
+app.get("/statement/:cpf", (request, response) => {
+  const { cpf } = request.params;
+
+  const customer = customers.find((customer) => customer.cpf === cpf);
+
+  return response.json(customer.statement);
+});
+
+app.delete("/account", verifyIfExistsAccountCPF, (request, response) => {
+  const { customer } = request;
+
+  // splice
+
+  customers.splice(customer, 1);
+  return response.status(200).json(customer);
+});
+*/
